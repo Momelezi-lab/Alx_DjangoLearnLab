@@ -8,13 +8,13 @@ from .views import (
 )
 
 urlpatterns = [
-    # Existing book/library URLs
+    # Existing views
     path('books/', list_books, name='list_books'),
     path('library/<int:pk>/', LibraryDetailView.as_view(), name='library_detail'),
 
-    # Custom permission URLs
-    path('book/add/', add_book, name='add_book'),
-    path('book/<int:pk>/edit/', edit_book, name='edit_book'),
-    path('book/<int:pk>/delete/', delete_book, name='delete_book'),
+    # Custom permission views
+    path('add_book/', add_book, name='add_book'),           # MUST contain "add_book/"
+    path('edit_book/<int:pk>/', edit_book, name='edit_book'), # MUST contain "edit_book/"
+    path('delete_book/<int:pk>/', delete_book, name='delete_book'),
 ]
 
