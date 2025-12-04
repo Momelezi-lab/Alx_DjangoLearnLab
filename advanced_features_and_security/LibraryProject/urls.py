@@ -1,8 +1,10 @@
-from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('relationship_app.urls')),
+    path("books/", views.view_books, name="view_books"),
+    path("books/create/", views.create_book, name="create_book"),
+    path("books/<int:pk>/edit/", views.edit_book, name="edit_book"),
+    path("books/<int:pk>/delete/", views.delete_book, name="delete_book"),
 ]
 
