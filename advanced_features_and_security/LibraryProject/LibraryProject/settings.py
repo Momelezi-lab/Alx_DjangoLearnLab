@@ -151,6 +151,11 @@ CSP_STYLE_SRC = ("'self'",)
 CSP_IMG_SRC = ("'self'",)
 
 
+# When behind a proxy/load balancer that handles SSL
+# Ensures Django knows the original request scheme was HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+
 # Enforce HTTPS for all requests
 SECURE_SSL_REDIRECT = True  # Redirect all HTTP requests to HTTPS
 
