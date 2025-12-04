@@ -1,22 +1,22 @@
-#!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
-import os
-import sys
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
+from relationship_app.models import Book
 
+# Get content type for Book
+book_ct = ContentType.objects.get_for_model(Book)
 
-def main():
-    """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LibraryProject.settings')
-    try:
-        from django.core.management import execute_from_command_line
-    except ImportError as exc:
-        raise ImportError(
-            "Couldn't import Django. Are you sure it's installed and "
-            "available on your PYTHONPATH environment variable? Did you "
-            "forget to activate a virtual environment?"
-        ) from exc
-    execute_from_command_line(sys.argv)
+# Create permissions
+can_view = Permission.objects.get(codename='can_view', content_type=book_ct)
+can_create = Permission.objects.get(codename='can_create', content_type=book_ct)
+can_edit = Permission.objects.get(codename='can_edit', content_type=book_ct)
+can_delete = Permission.objects.get(codename='can_delete', content_type=book_ct)
 
+# Create groups
+editors, _ = Group.objects.get_or_create(name='Editors')
+viewers, _ = Group.objects.get_or_create(name='Viewers')
+admins, _ = Group.objects.get_or_create(name='Admins')
 
-if __name__ == '__main__':
-    main()
+# Assign permissions to groups
+editors.permissions.set([can_create, can_edit])
+viewers.permissions.set([can_view])
+admins.permissions.set([can_view, can_create, can_edit, can_delete])
