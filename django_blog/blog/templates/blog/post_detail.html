@@ -6,9 +6,16 @@
     <title>{{ post.title }} - Django Blog</title>
     <style>
         body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        .post { background-color: #f9f9f9; padding: 15px; border-radius: 5px; }
+        .post { background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .comment { background-color: #e9ecef; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
         .nav { margin-bottom: 20px; }
         .nav a { margin-right: 10px; color: #007bff; }
+        .form-container { background-color: #f9f9f9; padding: 15px; border-radius: 5px; }
+        textarea { width: 100%; padding: 10px; margin: 10px 0; }
+        button { background-color: #007bff; color: white; padding: 10px; border: none; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .success { color: green; }
+        .error { color: red; }
     </style>
 </head>
 <body>
@@ -32,5 +39,37 @@
             <a href="{% url 'post_delete' post.pk %}">Delete</a>
         {% endif %}
     </div>
+    <h3>Comments</h3>
+    {% if comments %}
+        {% for comment in comments %}
+            <div class="comment">
+                <p>{{ comment.content }}</p>
+                <p><small>By {{ comment.author.username }} on {{ comment.created_at|date:"F d, Y H:i" }}</small></p>
+                {% if user == comment.author %}
+                    <a href="{% url 'comment_update' comment.pk %}">Edit</a> |
+                    <a href="{% url 'comment_delete' comment.pk %}">Delete</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No comments yet.</p>
+    {% endif %}
+    {% if user.is_authenticated %}
+        <div class="form-container">
+            <h4>Add a Comment</h4>
+            {% if messages %}
+                {% for message in messages %}
+                    <p class="{% if message.tags == 'error' %}error{% else %}success{% endif %}">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+            <form method="POST">
+                {% csrf_token %}
+                {{ comment_form.as_p }}
+                <button type="submit">Post Comment</button>
+            </form>
+        </div>
+    {% else %}
+        <p><a href="{% url 'login' %}">Log in</a> to post a comment.</p>
+    {% endif %}
 </body>
 </html>
