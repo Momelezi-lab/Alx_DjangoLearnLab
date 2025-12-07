@@ -36,7 +36,7 @@
         <input type="text" name="q" placeholder="Search posts..." value="{{ request.GET.q }}">
         <button type="submit">Search</button>
     </form>
-    <h1>Blog Posts</h1>
+    <h1>{% if tag %}Posts tagged with "{{ tag }}"{% else %}Blog Posts{% endif %}</h1>
     {% if messages %}
         {% for message in messages %}
             <p class="{% if message.tags == 'error' %}error{% else %}success{% endif %}">{{ message }}</p>
@@ -49,7 +49,7 @@
             <p><small>By {{ post.author.username }} on {{ post.created_at|date:"F d, Y" }}</small></p>
             <div class="tags">
                 {% for tag in post.tags.all %}
-                    <a href="{% url 'tag_posts' tag.name %}">{{ tag.name }}</a>
+                    <a href="{% url 'tag_posts' tag.slug %}">{{ tag.name }}</a>
                 {% endfor %}
             </div>
             {% if user == post.author %}

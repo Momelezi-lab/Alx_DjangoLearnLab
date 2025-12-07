@@ -15,6 +15,6 @@ urlpatterns = [
     path("logout/", views.logout_view, name="logout"),
     path("register/", views.register_view, name="register"),
     path("profile/", views.profile_view, name="profile"),
-    path("tags/<str:tag>/", views.TagPostsView.as_view(), name="tag_posts"),
+    path("tags/<slug:tag_slug>/", views.PostByTagListView.as_view(), name="tag_posts"),
     path("search/", views.SearchResultsView.as_view(), name="search"),
 ]
