@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Comment, Post
+from taggit.forms import TagWidget
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, help_text="Enter a valid email address.")
@@ -41,7 +42,7 @@ class PostForm(forms.ModelForm):
         widgets = {
             "title": forms.TextInput(attrs={"placeholder": "Enter post title"}),
             "content": forms.Textarea(attrs={"rows": 6, "placeholder": "Write your post content..."}),
-            "tags": forms.TextInput(attrs={"placeholder": "Enter tags, separated by commas"}),
+            "tags": TagWidget(attrs={"placeholder": "Enter tags, separated by commas"}),
         }
 
     def clean_title(self):
