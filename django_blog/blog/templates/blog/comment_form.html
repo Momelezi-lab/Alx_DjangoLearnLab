@@ -18,7 +18,7 @@
 </head>
 <body>
     <div class="nav">
-        <a href="{% url 'post_detail' object.post.pk|default:kwargs.post_id %}">Back to Post</a>
+        <a href="{% url 'post_detail' object.post.pk|default:kwargs.pk %}">Back to Post</a>
         <a href="{% url 'profile' %}">Profile</a>
     </div>
     <h2>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Comment</h2>

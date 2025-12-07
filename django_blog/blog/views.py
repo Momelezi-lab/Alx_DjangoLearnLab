@@ -55,7 +55,7 @@ def profile_view(request):
         user.save()
         profile.bio = bio
         if profile_picture:
-            profile.picture = profile_picture
+            profile.profile_picture = profile_picture
         profile.save()
         messages.success(request, "Profile updated successfully!")
         return redirect("profile")
@@ -113,11 +113,11 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        form.instance.post = get_object_or_404(Post, pk=self.kwargs["post_id"])
+        form.instance.post = get_object_or_404(Post, pk=self.kwargs["pk"])
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy("post_detail", kwargs={"pk": self.kwargs["post_id"]})
+        return reverse_lazy("post_detail", kwargs={"pk": self.kwargs["pk"]})
 
 class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Comment
