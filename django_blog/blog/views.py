@@ -6,7 +6,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import CustomUserCreationForm, CommentForm
+from django.db.models import Q
+from .forms import CustomUserCreationForm, CommentForm, PostForm
 from .models import Post, Profile, Comment
 
 # Authentication Views
@@ -81,7 +82,7 @@ class PostDetailView(DetailView):
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     template_name = "blog/post_form.html"
-    fields = ["title", "content"]
+    form_class = PostForm
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -90,7 +91,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     template_name = "blog/post_form.html"
-    fields = ["title", "content"]
+    form_class = PostForm
 
     def test_func(self):
         post = self.get_object()
@@ -141,3 +142,29 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return reverse_lazy("post_detail", kwargs={"pk": self.object.post.pk})
+
+# Tag View
+class TagPostsView(ListView):
+    model = Post
+    template_name = "blog/post_list.html"
+    context_object_name = "posts"
+
+    def get_queryset(self):
+        tag = self.kwargs["tag"]
+        return Post.objects.filter(tags__name=tag).order_by("-created_at")
+
+# Search View
+class SearchResultsView(ListView):
+    model = Post
+    template_name = "blog/search_results.html"
+    context_object_name = "posts"
+
+    def get_queryset(self):
+        query = self.request.GET.get("q", "")
+        if query:
+            return Post.objects.filter(
+                Q(title__icontains=query) |
+                Q(content__icontains=query) |
+                Q(tags__name__icontains=query)
+            ).distinct().order_by("-created_at")
+        return Post.objects.none()
