@@ -55,7 +55,7 @@ def profile_view(request):
         user.save()
         profile.bio = bio
         if profile_picture:
-            profile.profile_picture = profile_picture
+            profile.picture = profile_picture
         profile.save()
         messages.success(request, "Profile updated successfully!")
         return redirect("profile")
@@ -75,26 +75,8 @@ class PostDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["comment_form"] = CommentForm()
         context["comments"] = self.object.comments.all()
         return context
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        if not request.user.is_authenticated:
-            messages.error(request, "You must be logged in to comment.")
-            return redirect("login")
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.post = self.object
-            comment.author = request.user
-            comment.save()
-            messages.success(request, "Comment added successfully!")
-            return redirect("post_detail", pk=self.object.pk)
-        else:
-            messages.error(request, "Invalid comment. Please check the form.")
-            return self.render_to_response(self.get_context_data(comment_form=form))
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
@@ -124,6 +106,19 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.request.user == post.author
 
 # Comment CRUD Views
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    template_name = "blog/comment_form.html"
+    form_class = CommentForm
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.post = get_object_or_404(Post, pk=self.kwargs["post_id"])
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy("post_detail", kwargs={"pk": self.kwargs["post_id"]})
+
 class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Comment
     template_name = "blog/comment_form.html"

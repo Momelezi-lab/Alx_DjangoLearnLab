@@ -30,4 +30,6 @@ class CommentForm(forms.ModelForm):
         content = self.cleaned_data["content"]
         if len(content) < 5:
             raise forms.ValidationError("Comment must be at least 5 characters long.")
+        if len(content) > 1000:
+            raise forms.ValidationError("Comment cannot exceed 1000 characters.")
         return content

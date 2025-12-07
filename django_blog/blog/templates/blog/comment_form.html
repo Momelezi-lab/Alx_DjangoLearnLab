@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Comment - Django Blog</title>
+    <title>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Comment - Django Blog</title>
     <style>
         body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
         .form-container { background-color: #f9f9f9; padding: 20px; border-radius: 5px; }
@@ -18,10 +18,10 @@
 </head>
 <body>
     <div class="nav">
-        <a href="{% url 'post_detail' object.post.pk %}">Back to Post</a>
+        <a href="{% url 'post_detail' object.post.pk|default:kwargs.post_id %}">Back to Post</a>
         <a href="{% url 'profile' %}">Profile</a>
     </div>
-    <h2>Edit Comment</h2>
+    <h2>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Comment</h2>
     <div class="form-container">
         {% if messages %}
             {% for message in messages %}
@@ -31,7 +31,7 @@
         <form method="POST">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">Save Changes</button>
+            <button type="submit">Save</button>
         </form>
     </div>
 </body>

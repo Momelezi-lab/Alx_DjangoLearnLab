@@ -10,10 +10,6 @@
         .comment { background-color: #e9ecef; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
         .nav { margin-bottom: 20px; }
         .nav a { margin-right: 10px; color: #007bff; }
-        .form-container { background-color: #f9f9f9; padding: 15px; border-radius: 5px; }
-        textarea { width: 100%; padding: 10px; margin: 10px 0; }
-        button { background-color: #007bff; color: white; padding: 10px; border: none; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
         .success { color: green; }
         .error { color: red; }
     </style>
@@ -55,19 +51,7 @@
         <p>No comments yet.</p>
     {% endif %}
     {% if user.is_authenticated %}
-        <div class="form-container">
-            <h4>Add a Comment</h4>
-            {% if messages %}
-                {% for message in messages %}
-                    <p class="{% if message.tags == 'error' %}error{% else %}success{% endif %}">{{ message }}</p>
-                {% endfor %}
-            {% endif %}
-            <form method="POST">
-                {% csrf_token %}
-                {{ comment_form.as_p }}
-                <button type="submit">Post Comment</button>
-            </form>
-        </div>
+        <p><a href="{% url 'comment_create' post.pk %}">Add a Comment</a></p>
     {% else %}
         <p><a href="{% url 'login' %}">Log in</a> to post a comment.</p>
     {% endif %}
