@@ -7,6 +7,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
+from django.utils import timezone
 from .forms import CustomUserCreationForm, CommentForm, PostForm
 from .models import Post, Profile, Comment
 
@@ -67,12 +68,22 @@ class PostListView(ListView):
     model = Post
     template_name = "blog/post_list.html"
     context_object_name = "posts"
-    ordering = ["-created_at"]
+    ordering = ["-published_date"]
+
+    def get_queryset(self):
+        return Post.objects.filter(
+            published_date__lte=timezone.now()
+        ).exclude(published_date__isnull=True).order_by("-published_date")
 
 class PostDetailView(DetailView):
     model = Post
     template_name = "blog/post_detail.html"
     context_object_name = "post"
+
+    def get_queryset(self):
+        return Post.objects.filter(
+            published_date__lte=timezone.now()
+        ).exclude(published_date__isnull=True)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -151,7 +162,10 @@ class PostByTagListView(ListView):
 
     def get_queryset(self):
         tag_slug = self.kwargs["tag_slug"]
-        return Post.objects.filter(tags__slug=tag_slug).order_by("-created_at")
+        return Post.objects.filter(
+            tags__slug=tag_slug,
+            published_date__lte=timezone.now()
+        ).exclude(published_date__isnull=True).order_by("-published_date")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -170,6 +184,7 @@ class SearchResultsView(ListView):
             return Post.objects.filter(
                 Q(title__icontains=query) |
                 Q(content__icontains=query) |
-                Q(tags__name__icontains=query)
-            ).distinct().order_by("-created_at")
+                Q(tags__name__icontains=query),
+                published_date__lte=timezone.now()
+            ).exclude(published_date__isnull=True).distinct().order_by("-published_date")
         return Post.objects.none()

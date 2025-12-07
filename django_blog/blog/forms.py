@@ -38,11 +38,12 @@ class CommentForm(forms.ModelForm):
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ["title", "content", "tags"]
+        fields = ["title", "content", "tags", "published_date"]
         widgets = {
             "title": forms.TextInput(attrs={"placeholder": "Enter post title"}),
             "content": forms.Textarea(attrs={"rows": 6, "placeholder": "Write your post content..."}),
             "tags": TagWidget(),
+            "published_date": forms.DateTimeInput(attrs={"type": "datetime-local", "placeholder": "Select publication date"}),
         }
 
     def clean_title(self):
