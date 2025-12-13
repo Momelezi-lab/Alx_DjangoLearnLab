@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_filters',
     'accounts',
     'posts',
+    'notifications',
     
     
 ]
@@ -119,7 +120,7 @@ REST_FRAMEWORK = {
 }
 
 
-AUTH_USER_MODEL = 'accounts.user'
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 
 # Internationalization
