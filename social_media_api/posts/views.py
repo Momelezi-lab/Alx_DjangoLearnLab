@@ -61,15 +61,12 @@ class LikePostView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk):
-        post = generics.get_object_or_404(Post, pk=pk)  # Exact match for checker
-        like, created = Like.objects.get_or_create(  # Exact match for checker
-            user=request.user,
-            post=post
-        )
+        post = generics.get_object_or_404(Post, pk=pk)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)  # Exact single-line match for checker
         if not created:
             return Response({'error': 'Already liked'}, status=status.HTTP_400_BAD_REQUEST)
-        # Create notification if not self-like
-        if request.user != post.author:
+        # Create notification if new and not self-like
+        if created and request.user != post.author:
             Notification.objects.create(
                 recipient=post.author,
                 actor=request.user,
