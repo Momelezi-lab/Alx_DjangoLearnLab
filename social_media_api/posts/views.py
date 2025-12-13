@@ -10,7 +10,7 @@ from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 
-User = get_user_model()
+CustomUser = get_user_model()
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
