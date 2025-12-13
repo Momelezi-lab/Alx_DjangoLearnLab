@@ -6,6 +6,8 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
+    followers = serializers.PrimaryKeyRelatedField(many=True, read_only=True)  
+    following = serializers.PrimaryKeyRelatedField(many=True, read_only=True)  # New: for API response
     class Meta:
         model = User
         fields = [
