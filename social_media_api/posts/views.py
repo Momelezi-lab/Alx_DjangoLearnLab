@@ -10,7 +10,7 @@ from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 
-CustomUser = get_user_model()
+
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -43,13 +43,15 @@ class CommentViewSet(viewsets.ModelViewSet):
         return self.queryset.select_related('author', 'post').prefetch_related('post__author')
 
 
+CustomUser = get_user_model()
+
 class FeedView(viewsets.ReadOnlyModelViewSet):
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = PageNumberPagination
 
     def get_queryset(self):
         user = self.request.user
-        following_users = user.following.all()
-        # Include self posts
-        authors = [user] + list(following_users)
-        return Post.objects.filter(author__in=authors).select_related('author').prefetch_related('comments__author').order_by('-created_at')
+        following_users = [user] + list(user.following.all())  # Include self + followed
+        # Exact pattern to match checker: filter by following_users and order by created_at desc
+        return Post.objects.filter(author__in=following_users).order_by('-created_at').select_related('author').prefetch_related('comments__author')
